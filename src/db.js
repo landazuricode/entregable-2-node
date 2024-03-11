@@ -1,8 +1,8 @@
-// src/db.js
+require('dotenv').config();
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    connectionString: 'postgresql://postgres:postgres@localhost:5432/node2',
+    connectionString: process.env.DATABASE_URL
 });
 
 module.exports = pool;
