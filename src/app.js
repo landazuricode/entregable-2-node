@@ -7,8 +7,7 @@ app.use(express.json());
 
 app.use('/users', usersRouter);
 
-
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
-module.exports = app;
+module.exports = server;
