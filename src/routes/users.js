@@ -1,34 +1,28 @@
 const express = require("express");
-const {
-  getAllUsers,
-  createUser,
-  getUserById,
-  deleteUser,
-  updateUser,
-} = require("../models/user");
-const router = express.Router();
+const usersRouter = express.Router();
+const User = require("../models/user");
 
-router.get("/", async (req, res) => {
+usersRouter.get("/", async (req, res) => {
   try {
-    const users = await getAllUsers();
+    const users = await User.findAll();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.post("/", async (req, res) => {
+usersRouter.post("/", async (req, res) => {
   try {
-    const user = await createUser(req.body);
+    const user = await User.create(req.body);
     res.status(201).json(user);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-router.get("/:id", async (req, res) => {
+usersRouter.get("/:id", async (req, res) => {
   try {
-    const user = await getUserById(req.params.id);
+    const user = await User.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -38,25 +32,30 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+usersRouter.delete("/:id", async (req, res) => {
   try {
-    await deleteUser(req.params.id);
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    await user.destroy();
     res.status(204).end();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.put("/:id", async (req, res) => {
+usersRouter.put("/:id", async (req, res) => {
   try {
-    const user = await updateUser(req.params.id, req.body);
+    let user = await User.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    user = await user.update(req.body);
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-module.exports = router;
+module.exports = usersRouter;
